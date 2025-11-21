@@ -34,7 +34,7 @@
 
     <div id="warning-header">
         <h4>Warning</h4>
-        <p>This tool requires CORS restrictions to be disabled for it to work. You can use a browser extension or manually disable CORS in your browser settings. If you know of a free and reliable CORS proxy, let us know!</p>
+        <p>This tool requires CORS restrictions to be disabled for it to work. Therefore, it uses a CORS Anywhere proxy to process requests.</p>
         <p>Use at your own risk and avoid excessive use to prevent blocks.</p>
     </div>
 
@@ -65,12 +65,18 @@
             };
         }
 
+        {{CORS_PROXY_INJECTION}}
+
         async function checkCode(code) {
             const targetUrl = 'https://bandcamp.com/api/codes/1/verify';
+            const fullUrl = proxyUrl ? `${proxyUrl}${targetUrl}` : targetUrl;
 
             try {
-                const response = await fetch(targetUrl, {
+                const response = await fetch(fullUrl, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({
                         is_corp: true,
                         code
